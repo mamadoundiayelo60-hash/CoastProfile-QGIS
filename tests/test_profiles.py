@@ -24,6 +24,15 @@ class ProfileEngineTests(unittest.TestCase):
         self.assertEqual(round(result.accretion_area,3),10)
         self.assertEqual(result.erosion_area,0)
 
+    def test_comparison_erosion_and_common_length(self):
+        first=build_profile('P','2025',[SurveyPoint(0,0,3),SurveyPoint(10,0,2)])
+        second=build_profile('P','2027',[SurveyPoint(0,0,2),SurveyPoint(20,0,1)])
+        result=compare(first,second)
+        self.assertEqual(result.chainage[-1],10)
+        self.assertEqual(round(result.erosion_area,3),7.5)
+        self.assertEqual(result.accretion_area,0)
+        self.assertEqual(round(result.net_area,3),-7.5)
+
     def test_decimal_comma(self):
         self.assertEqual(decimal('0,014'),0.014)
 
