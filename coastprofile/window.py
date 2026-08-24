@@ -4,10 +4,10 @@ from pathlib import Path
 import traceback
 from math import ceil, floor, log10
 from qgis.PyQt.QtCore import Qt, QRectF, QLineF, QPointF
-from qgis.PyQt.QtGui import QColor, QPainter, QPen, QFont, QBrush
-from qgis.PyQt.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QFormLayout,QComboBox,QPushButton,QLabel,QListWidget,QFileDialog,QMessageBox,QSplitter,QDoubleSpinBox)
+from qgis.PyQt.QtGui import QColor, QPainter, QPen, QFont, QBrush, QPolygonF
+from qgis.PyQt.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QFormLayout,QComboBox,QPushButton,QLabel,QListWidget,QFileDialog,QMessageBox,QSplitter,QDoubleSpinBox,QTabWidget,QHBoxLayout)
 from qgis.core import QgsProject,QgsVectorLayer,QgsWkbTypes
-from .core.profiles import SurveyPoint,build_profile,decimal,main_spatial_group,profile_identifier,natural_sort_key
+from .core.profiles import SurveyPoint,build_profile,compare,decimal,main_spatial_group,profile_identifier,natural_sort_key
 
 def _enum(owner,scope,name):
     """Retourne un enum Qt avec ou sans portée (compatibilité Qt 5 / Qt 6)."""
@@ -20,6 +20,11 @@ HORIZONTAL=_enum(Qt,'Orientation','Horizontal')
 ANTIALIASING=_enum(QPainter,'RenderHint','Antialiasing')
 CRITICAL=_enum(QMessageBox,'Icon','Critical')
 
+def nice_step(span,target=6):
+    raw=max(span/target,1e-9); power=10**floor(log10(raw)); fraction=raw/power
+    nice=1 if fraction<=1 else 2 if fraction<=2 else 5 if fraction<=5 else 10
+    return nice*power
+
 class ProfileChart(QWidget):
     def __init__(self): super().__init__(); self.setMinimumSize(650,420); self.profile=None
     def set_profile(self,p): self.profile=p; self.update()
@@ -29,10 +34,6 @@ class ProfileChart(QWidget):
         left,top,right,bottom=82,54,34,72
         box=QRectF(left,top,self.width()-left-right,self.height()-top-bottom); q.setPen(QPen(QColor('#98a2b3'),1)); q.drawRect(box)
         xs=p.chainage; zs=[x.z for x in p.points]
-        def nice_step(span,target=6):
-            raw=max(span/target,1e-9); power=10**floor(log10(raw)); fraction=raw/power
-            nice=1 if fraction<=1 else 2 if fraction<=2 else 5 if fraction<=5 else 10
-            return nice*power
         xstep=nice_step(max(xs),6); xmax=ceil(max(xs)/xstep)*xstep
         ystep=nice_step(max(zs)-min(zs),6); zmin=floor((min(zs)-.15)/ystep)*ystep; zmax=ceil((max(zs)+.15)/ystep)*ystep
         def xy(x,z): return box.left()+x/max(xmax,1)*box.width(), box.bottom()-(z-zmin)/max(zmax-zmin,.1)*box.height()
@@ -64,13 +65,53 @@ class ProfileChart(QWidget):
         lx=box.right()-118; ly=box.top()+18; q.setPen(QPen(QColor('#e31a1c'),3)); q.drawLine(QLineF(lx,ly,lx+28,ly)); q.setBrush(QColor('#e31a1c')); q.drawEllipse(QPointF(lx+14,ly),3.5,3.5); q.setPen(QColor('#101828')); q.drawText(QPointF(lx+38,ly+5),str(p.campaign))
         q.setPen(QColor('#667085')); q.setFont(QFont('Arial',9)); q.drawText(QPointF(box.left()+8,box.top()+18),f'{len(zs)} points GNSS')
 
+class ComparisonChart(QWidget):
+    COLORS=('#2563eb','#e31a1c','#7c3aed','#f59e0b','#0891b2','#16a34a')
+    def __init__(self):
+        super().__init__(); self.setMinimumSize(650,420); self.series=[]; self.reference=None; self.target=None; self.threshold=.05
+    def set_profiles(self,profiles,reference=None,target=None,threshold=.05):
+        self.series=list(profiles); self.reference=reference; self.target=target; self.threshold=threshold; self.update()
+    def paintEvent(self,event):
+        q=QPainter(self); q.setRenderHint(ANTIALIASING,True); q.fillRect(self.rect(),QColor('#ffffff'))
+        if not self.series:
+            q.setPen(QColor('#667085')); q.drawText(self.rect(),ALIGN_CENTER,'Chargez au moins deux campagnes pour un même profil'); return
+        left,top,right,bottom=82,60,44,76; box=QRectF(left,top,self.width()-left-right,self.height()-top-bottom)
+        xmax=max(p.chainage[-1] for p in self.series); zs=[pt.z for p in self.series for pt in p.points]
+        xstep=nice_step(xmax,6); xlimit=ceil(xmax/xstep)*xstep; ystep=nice_step(max(zs)-min(zs),6)
+        zmin=floor((min(zs)-.15)/ystep)*ystep; zmax=ceil((max(zs)+.15)/ystep)*ystep
+        def xy(x,z): return box.left()+x/max(xlimit,1)*box.width(),box.bottom()-(z-zmin)/max(zmax-zmin,.1)*box.height()
+        q.setPen(QPen(QColor('#cfd6df'),1)); q.drawRect(box)
+        for i in range(int(round((zmax-zmin)/ystep))+1):
+            val=zmin+i*ystep; y=xy(0,val)[1]; q.setPen(QPen(QColor('#d8dde5'),1)); q.drawLine(QLineF(box.left(),y,box.right(),y)); q.setPen(QColor('#475467')); q.drawText(QRectF(28,y-10,45,20),ALIGN_RIGHT|ALIGN_VCENTER,(f'{val:.1f}'.replace('.',',') if ystep<1 else f'{val:.0f}'))
+        for i in range(int(round(xlimit/xstep))+1):
+            val=i*xstep; x=xy(val,zmin)[0]; q.setPen(QPen(QColor('#d8dde5'),1)); q.drawLine(QLineF(x,box.top(),x,box.bottom())); q.setPen(QColor('#475467')); q.drawText(QRectF(x-35,box.bottom()+8,70,20),ALIGN_CENTER,f'{val:.0f}')
+        if self.reference and self.target:
+            result=compare(self.reference,self.target)
+            for i in range(1,len(result.chainage)):
+                delta=(result.second_z[i-1]-result.first_z[i-1]+result.second_z[i]-result.first_z[i])/2
+                color=QColor('#16a34a' if delta>self.threshold else '#dc2626' if delta<-self.threshold else '#94a3b8'); color.setAlpha(70)
+                pts=[]
+                for x,z in ((result.chainage[i-1],result.first_z[i-1]),(result.chainage[i],result.first_z[i]),(result.chainage[i],result.second_z[i]),(result.chainage[i-1],result.second_z[i-1])):
+                    px,py=xy(x,z); pts.append(QPointF(px,py))
+                q.setPen(QPen(color,0)); q.setBrush(QBrush(color)); q.drawPolygon(QPolygonF(pts))
+        legend_x=box.left()+8
+        for index,p in enumerate(self.series):
+            color=QColor(self.COLORS[index%len(self.COLORS)]); q.setPen(QPen(color,2.5)); coords=[xy(x,pt.z) for x,pt in zip(p.chainage,p.points)]
+            for a,b in zip(coords,coords[1:]): q.drawLine(QLineF(a[0],a[1],b[0],b[1]))
+            q.setBrush(color)
+            for x,y in coords: q.drawEllipse(QPointF(x,y),3,3)
+            lx=legend_x+index*110; q.drawLine(QLineF(lx,box.top()+18,lx+22,box.top()+18)); q.drawEllipse(QPointF(lx+11,box.top()+18),3,3); q.setPen(QColor('#101828')); q.drawText(QPointF(lx+30,box.top()+23),str(p.campaign))
+        q.setPen(QColor('#101828')); q.setFont(QFont('Arial',14,600)); q.drawText(QRectF(0,10,self.width(),32),ALIGN_CENTER,f'{self.series[0].identifier} — Évolution multiannuelle')
+        q.setFont(QFont('Arial',10)); q.drawText(QRectF(box.left(),box.bottom()+36,box.width(),24),ALIGN_CENTER,'Distance cumulée (m)')
+        q.save(); q.translate(20,box.center().y()); q.rotate(-90); q.drawText(QRectF(-box.height()/2,-12,box.height(),24),ALIGN_CENTER,'Altitude Z (m)'); q.restore()
+
 class CoastProfileWindow(QMainWindow):
     def __init__(self,iface):
-        super().__init__(iface.mainWindow()); self.iface=iface; self.profiles={}; self.setWindowTitle('CoastProfile — Profils côtiers'); self.resize(1180,720); self.setMinimumSize(850,540); self._ui()
+        super().__init__(iface.mainWindow()); self.iface=iface; self.profiles={}; self.profile_archive=defaultdict(dict); self.setWindowTitle('CoastProfile — Profils côtiers'); self.resize(1180,720); self.setMinimumSize(850,540); self._ui()
     def _ui(self):
         root=QWidget(); self.setCentralWidget(root); lay=QVBoxLayout(root)
         title=QLabel('<h2>CoastProfile</h2><span style="color:#667085">De la campagne GNSS au suivi morphologique multiannuel</span>'); lay.addWidget(title)
-        split=QSplitter(HORIZONTAL); lay.addWidget(split,1)
+        self.tabs=QTabWidget(); lay.addWidget(self.tabs,1); annual=QWidget(); annual_lay=QVBoxLayout(annual); split=QSplitter(HORIZONTAL); annual_lay.addWidget(split,1); self.tabs.addTab(annual,'Profils annuels')
         left=QWidget(); ll=QVBoxLayout(left); form=QFormLayout(); self.layers=QComboBox(); self.group=QComboBox(); self.date=QComboBox(); self.zfield=QComboBox(); self.distance=QDoubleSpinBox(); self.distance.setRange(1,5000); self.distance.setValue(75); self.distance.setSuffix(' m'); form.addRow('Couche de points',self.layers); form.addRow('Champ identifiant',self.group); form.addRow('Champ campagne/date',self.date); form.addRow('Source de l’altitude',self.zfield); form.addRow('Seuil d’isolement',self.distance); ll.addLayout(form)
         self.layers.currentIndexChanged.connect(self._fields); load=QPushButton('Créer les profils'); load.clicked.connect(self.load_profiles); ll.addWidget(load)
         ll.addWidget(QLabel('Profils détectés')); self.list=QListWidget(); self.list.currentTextChanged.connect(self.show_profile); ll.addWidget(self.list,1)
@@ -78,11 +119,22 @@ class CoastProfileWindow(QMainWindow):
         batch=QPushButton('Exporter tous les profils dans un dossier'); batch.clicked.connect(self.export_all); ll.insertWidget(ll.count()-2,batch)
         self.status=QLabel('Prêt. Les données sources ne sont jamais modifiées.'); self.status.setWordWrap(True); ll.addWidget(self.status); split.addWidget(left)
         self.chart=ProfileChart(); split.addWidget(self.chart); split.setSizes([320,850])
+        self._comparison_tab()
+    def _comparison_tab(self):
+        tab=QWidget(); outer=QVBoxLayout(tab); split=QSplitter(HORIZONTAL); outer.addWidget(split,1)
+        controls=QWidget(); cl=QVBoxLayout(controls); form=QFormLayout(); self.compare_id=QComboBox(); self.reference_campaign=QComboBox(); self.target_campaign=QComboBox(); self.uncertainty=QDoubleSpinBox(); self.uncertainty.setRange(0,2); self.uncertainty.setDecimals(2); self.uncertainty.setSingleStep(.01); self.uncertainty.setValue(.05); self.uncertainty.setSuffix(' m'); form.addRow('Identifiant du profil',self.compare_id); form.addRow('Campagne de référence',self.reference_campaign); form.addRow('Campagne comparée',self.target_campaign); form.addRow('Seuil de stabilité ±',self.uncertainty); cl.addLayout(form)
+        self.compare_id.currentTextChanged.connect(self._comparison_campaigns); button=QPushButton('Comparer les campagnes'); button.clicked.connect(self.run_comparison); cl.addWidget(button)
+        export=QPushButton('Exporter la comparaison en PNG'); export.clicked.connect(self.export_comparison); cl.addWidget(export)
+        self.metrics=QLabel('Ajoutez plusieurs campagnes portant le même identifiant.'); self.metrics.setWordWrap(True); self.metrics.setStyleSheet('padding:12px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;'); cl.addWidget(self.metrics); cl.addStretch(1)
+        note=QLabel('Interprétation : vert = hausse, rouge = baisse, gris = variation comprise dans l’incertitude. Les surfaces sont exprimées en m² par mètre linéaire de côte. Comparez uniquement des campagnes dans le même référentiel altimétrique.'); note.setWordWrap(True); cl.addWidget(note); split.addWidget(controls)
+        self.comparison_chart=ComparisonChart(); split.addWidget(self.comparison_chart); split.setSizes([330,850]); self.tabs.addTab(tab,'Évolution multiannuelle')
     def reset_results(self):
         """Vide les résultats calculés sans toucher aux couches sources QGIS."""
         self.profiles.clear()
+        self.profile_archive.clear()
         self.list.clear()
         self.chart.set_profile(None)
+        self.comparison_chart.set_profiles([]); self.compare_id.clear(); self.reference_campaign.clear(); self.target_campaign.clear()
         self.status.setText('Prêt. Cliquez sur « Créer les profils » pour lancer une nouvelle analyse.')
     def closeEvent(self,event):
         self.reset_results()
@@ -111,7 +163,9 @@ class CoastProfileWindow(QMainWindow):
             if lyr.crs().isGeographic():
                 QMessageBox.warning(self,'CRS non métrique','La couche utilise un CRS géographique. Reprojetez-la dans un CRS métrique avant de calculer les distances.')
                 return
-            groups=defaultdict(list); campaigns=defaultdict(set); gf=self.group.currentText(); df=self.date.currentText(); zf=self.zfield.currentData(); names=lyr.fields().names(); skipped=0
+            groups=defaultdict(list); gf=self.group.currentText(); df=self.date.currentText(); zf=self.zfield.currentData(); names=lyr.fields().names(); skipped=0
+            if gf==df:
+                QMessageBox.warning(self,'Champs identiques','Le champ identifiant et le champ campagne/date doivent être différents.'); return
             for f in lyr.getFeatures():
                 g=f.geometry()
                 if not g or g.isEmpty(): skipped+=1; continue
@@ -125,17 +179,18 @@ class CoastProfileWindow(QMainWindow):
                 ident=profile_identifier(raw)
                 if ident is None: skipped+=1; continue
                 state=str(f['État']) if 'État' in names else 'FIXE'
-                groups[ident].append(SurveyPoint(float(pt.x()),float(pt.y()),float(z),decimal(f['HRMS']) if 'HRMS' in names else None,decimal(f['VRMS']) if 'VRMS' in names else None,state.upper().startswith('FIX'),f.id()))
-                if df in names and f[df] not in (None,''):
-                    value=f[df]; campaign=value.toString('yyyy') if hasattr(value,'toString') else str(value).strip(); campaigns[ident].add(campaign)
+                value=f[df] if df in names else None; campaign=value.toString('yyyy') if hasattr(value,'toString') else str(value).strip() if value not in (None,'') else 'campagne'
+                groups[(ident,campaign)].append(SurveyPoint(float(pt.x()),float(pt.y()),float(z),decimal(f['HRMS']) if 'HRMS' in names else None,decimal(f['VRMS']) if 'VRMS' in names else None,state.upper().startswith('FIX'),f.id()))
             self.profiles={}; self.list.clear()
-            mixed=0
-            for ident in sorted(groups,key=natural_sort_key):
-                pts,isolated=main_spatial_group(groups[ident],self.distance.value()); skipped+=len(isolated)
-                values=campaigns.get(ident,set()); campaign=next(iter(values)) if len(values)==1 else ('multi' if values else 'campagne'); mixed+=int(len(values)>1)
-                if len(pts)>1: self.profiles[ident]=build_profile(ident,campaign,pts); self.list.addItem(ident)
+            counts=defaultdict(int)
+            for ident,campaign in groups: counts[ident]+=1
+            for ident,campaign in sorted(groups,key=lambda k:(natural_sort_key(k[0]),natural_sort_key(k[1]))):
+                pts,isolated=main_spatial_group(groups[(ident,campaign)],self.distance.value()); skipped+=len(isolated)
+                if len(pts)>1:
+                    p=build_profile(ident,campaign,pts); label=ident if counts[ident]==1 else f'{ident} — {campaign}'; self.profiles[label]=p; self.profile_archive[ident][campaign]=p; self.list.addItem(label)
             total=sum(len(p.points) for p in self.profiles.values())
-            note=f' · {mixed} profil(s) avec plusieurs campagnes' if mixed else ''
+            comparable=sum(1 for values in self.profile_archive.values() if len(values)>=2); self._refresh_comparison_ids()
+            note=f' · {comparable} profil(s) désormais comparable(s)' if comparable else ''
             self.status.setText(f'{len(self.profiles)} profils créés à partir de {total} points · {skipped} point(s) écarté(s){note}. Orientation terre → mer.')
             if self.list.count(): self.list.setCurrentRow(0)
             else: QMessageBox.warning(self,'Aucun profil','Aucun groupe ne contient au moins deux points 3D. Vérifiez le champ identifiant et la présence des altitudes Z.')
@@ -162,3 +217,24 @@ class CoastProfileWindow(QMainWindow):
         if previous: self.list.setCurrentRow(list(self.profiles).index(previous))
         self.status.setText(f'{done} graphiques exportés dans : {folder}')
         QMessageBox.information(self,'Export terminé',f'{done} graphiques ont été enregistrés dans le dossier sélectionné.')
+    def _refresh_comparison_ids(self):
+        current=self.compare_id.currentText(); self.compare_id.blockSignals(True); self.compare_id.clear()
+        for ident in sorted((k for k,v in self.profile_archive.items() if len(v)>=2),key=natural_sort_key): self.compare_id.addItem(ident)
+        i=self.compare_id.findText(current); self.compare_id.setCurrentIndex(max(0,i)); self.compare_id.blockSignals(False); self._comparison_campaigns()
+    def _comparison_campaigns(self):
+        ident=self.compare_id.currentText(); campaigns=sorted(self.profile_archive.get(ident,{}),key=natural_sort_key)
+        self.reference_campaign.clear(); self.target_campaign.clear(); self.reference_campaign.addItems(campaigns); self.target_campaign.addItems(campaigns)
+        if len(campaigns)>1: self.target_campaign.setCurrentIndex(len(campaigns)-1)
+    def run_comparison(self):
+        ident=self.compare_id.currentText(); ref=self.reference_campaign.currentText(); target=self.target_campaign.currentText()
+        if not ident or not ref or not target: QMessageBox.information(self,'Comparaison indisponible','Chargez au moins deux campagnes pour un même identifiant.'); return
+        if ref==target: QMessageBox.warning(self,'Campagnes identiques','Sélectionnez deux campagnes différentes.'); return
+        archive=self.profile_archive[ident]; first=archive[ref]; second=archive[target]; result=compare(first,second); threshold=self.uncertainty.value()
+        ordered=[archive[c] for c in sorted(archive,key=natural_sort_key)]; self.comparison_chart.set_profiles(ordered,first,second,threshold)
+        stable_area=threshold*result.chainage[-1]
+        trend='hausse nette' if result.net_area>stable_area else 'baisse nette' if result.net_area<-stable_area else 'stabilité globale'
+        self.metrics.setText(f'<b>{ref} → {target} : {trend}</b><br>Longueur commune : {result.chainage[-1]:.1f} m<br>Accrétion : {result.accretion_area:.1f} m²/ml<br>Érosion : {result.erosion_area:.1f} m²/ml<br>Bilan net : {result.net_area:+.1f} m²/ml<br>Hausse maximale : {result.max_accretion:+.2f} m<br>Baisse maximale : {result.max_erosion:+.2f} m')
+    def export_comparison(self):
+        if not self.comparison_chart.series: return
+        ident=self.comparison_chart.series[0].identifier.replace('/','_').replace(' ','_'); path,_=QFileDialog.getSaveFileName(self,'Exporter la comparaison',f'{ident}_evolution_multiannuelle.png','PNG (*.png)')
+        if path: self.comparison_chart.grab().save(path,'PNG'); self.metrics.setText(self.metrics.text()+f'<br><br>Graphique exporté : {path}')
