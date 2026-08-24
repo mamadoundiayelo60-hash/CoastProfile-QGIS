@@ -11,5 +11,5 @@ icon=icon.svg
 tags=coast,dune,beach,GNSS,profile,erosion,monitoring
 experimental=True
 deprecated=False
-tracker=https://github.com/mamadoundiayelo60-hash/coastprofile-lab/issues
-repository=https://github.com/mamadoundiayelo60-hash/coastprofile-lab
+tracker=https://github.com/mamadoundiayelo60-hash/CoastProfile-QGIS/issues
+repository=https://github.com/mamadoundiayelo60-hash/CoastProfile-QGIS
