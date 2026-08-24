@@ -2,6 +2,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from math import hypot
 from typing import Iterable
+import re
 
 @dataclass(frozen=True)
 class SurveyPoint:
@@ -29,6 +30,10 @@ def profile_identifier(value) -> str | None:
     if value is None: return None
     text=str(value).strip()
     return text or None
+
+def natural_sort_key(value: str):
+    """Trie P2 avant P10 tout en conservant exactement le nom d'origine."""
+    return tuple(int(part) if part.isdigit() else part.casefold() for part in re.split(r'(\d+)',value))
 
 def main_spatial_group(points: Iterable[SurveyPoint], link_distance: float=75.0) -> tuple[list[SurveyPoint],list[SurveyPoint]]:
     """Conserve la plus grande composante spatiale et isole les points éloignés."""

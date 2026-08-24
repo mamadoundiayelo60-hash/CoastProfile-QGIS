@@ -7,7 +7,7 @@ from qgis.PyQt.QtCore import Qt, QRectF, QLineF, QPointF
 from qgis.PyQt.QtGui import QColor, QPainter, QPen, QFont, QBrush
 from qgis.PyQt.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QFormLayout,QComboBox,QPushButton,QLabel,QListWidget,QFileDialog,QMessageBox,QSplitter,QDoubleSpinBox)
 from qgis.core import QgsProject,QgsVectorLayer,QgsWkbTypes
-from .core.profiles import SurveyPoint,build_profile,decimal,main_spatial_group,profile_identifier
+from .core.profiles import SurveyPoint,build_profile,decimal,main_spatial_group,profile_identifier,natural_sort_key
 
 def _enum(owner,scope,name):
     """Retourne un enum Qt avec ou sans portée (compatibilité Qt 5 / Qt 6)."""
@@ -130,7 +130,7 @@ class CoastProfileWindow(QMainWindow):
                     value=f[df]; campaign=value.toString('yyyy') if hasattr(value,'toString') else str(value).strip(); campaigns[ident].add(campaign)
             self.profiles={}; self.list.clear()
             mixed=0
-            for ident in sorted(groups,key=lambda x:x.casefold()):
+            for ident in sorted(groups,key=natural_sort_key):
                 pts,isolated=main_spatial_group(groups[ident],self.distance.value()); skipped+=len(isolated)
                 values=campaigns.get(ident,set()); campaign=next(iter(values)) if len(values)==1 else ('multi' if values else 'campagne'); mixed+=int(len(values)>1)
                 if len(pts)>1: self.profiles[ident]=build_profile(ident,campaign,pts); self.list.addItem(ident)

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.1 — 2026-08-24
+
+- compatibilité validée sur QGIS 3.44.13 LTR et QGIS 4.0.3 ;
+- tri naturel des profils (`1, 2, 10` au lieu de `1, 10, 2`).
+
 ## 0.3.0 — 2026-08-24
 
 - suppression complète des noms de profils codés en dur ;

@@ -7,6 +7,7 @@ from coastprofile.core.profiles import (
     decimal,
     main_spatial_group,
     profile_identifier,
+    natural_sort_key,
 )
 
 
@@ -35,6 +36,10 @@ class ProfileEngineTests(unittest.TestCase):
         self.assertEqual(profile_identifier(0),'0')
         self.assertEqual(profile_identifier('TR-17'),'TR-17')
         self.assertIsNone(profile_identifier('  '))
+
+    def test_natural_identifier_sort(self):
+        values=['10','2','1','P11','P3']
+        self.assertEqual(sorted(values,key=natural_sort_key),['1','2','10','P3','P11'])
 
 
 if __name__ == '__main__':
