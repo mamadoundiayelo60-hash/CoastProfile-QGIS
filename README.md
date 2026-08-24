@@ -37,7 +37,7 @@ Pour la campagne pilote : **RGF93 / CC50 — EPSG:3950**.
 ## Architecture
 
 ```text
-coastprofile_lab/
+coastprofile/
 ├── plugin.py          # cycle de vie QGIS
 ├── window.py          # interface Qt 6 et graphique
 ├── icon.svg           # identité visuelle
@@ -66,7 +66,7 @@ Le moteur est séparé de l'interface afin de faciliter les tests et les évolut
 
 ## Auteur
 
-**Mamadou Ndiaye LO** — Géomaticien – Administrateur SIG & Développeur SIG Web | Data spatiale, bases de données & automatisation
+**Mamadou Ndiaye LO** — Géomaticien / Administrateur SIG  
 Python · QGIS · PostgreSQL/PostGIS · ETL géospatial · GNSS/LiDAR
 
 Licence MIT.

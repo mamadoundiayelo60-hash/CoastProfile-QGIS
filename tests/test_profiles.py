@@ -1,4 +1,4 @@
-from coastprofile_lab.core.profiles import SurveyPoint,build_profile,compare,decimal,main_spatial_group
+from coastprofile.core.profiles import SurveyPoint,build_profile,compare,decimal,main_spatial_group
 def test_orientation_and_chainage():
     p=build_profile('P1','2026',[SurveyPoint(0,0,0),SurveyPoint(3,4,5)])
     assert p.points[0].z==5 and p.chainage== (0.0,5.0)
