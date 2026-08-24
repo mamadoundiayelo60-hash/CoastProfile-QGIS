@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 — 2026-08-24
+
+- conservation intégrale de la génération et des exports de profils annuels ;
+- archivage temporaire des campagnes par identifiant de profil ;
+- nouvel onglet **Évolution multiannuelle** ;
+- superposition de toutes les campagnes disponibles pour un même profil ;
+- comparaison paramétrable entre une campagne de référence et une campagne cible ;
+- mise en évidence de l'accrétion, de l'érosion et des variations comprises dans l'incertitude ;
+- calcul du bilan net, des surfaces positives/négatives et des écarts altimétriques extrêmes ;
+- export PNG du graphique comparatif.
+
 ## 0.3.1 — 2026-08-24
 
 - compatibilité validée sur QGIS 3.44.13 LTR et QGIS 4.0.3 ;
