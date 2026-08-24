@@ -66,7 +66,7 @@ Le moteur est séparé de l'interface afin de faciliter les tests et les évolut
 
 ## Auteur
 
-**Mamadou Ndiaye LO** — Géomaticien / Administrateur SIG  
+**Mamadou Ndiaye LO** — Géomaticien – Administrateur SIG & Développeur SIG Web | Data spatiale, bases de données & automatisation
 Python · QGIS · PostgreSQL/PostGIS · ETL géospatial · GNSS/LiDAR
 
 Licence MIT.
