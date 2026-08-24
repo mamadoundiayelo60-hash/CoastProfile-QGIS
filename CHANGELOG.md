@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.2 — 2026-08-24
+
+- réinitialisation de la liste, du graphique et des résultats à la fermeture ;
+- nouvelle ouverture toujours propre, sans réafficher l'analyse précédente ;
+- aucune modification des données sources ou des couches chargées dans QGIS.
+
 ## 0.2.1 — 2026-08-24
 
 - nom simplifié en **CoastProfile** et paquet Python renommé `coastprofile` ;

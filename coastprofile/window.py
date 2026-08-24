@@ -69,6 +69,15 @@ class CoastProfileWindow(QMainWindow):
         batch=QPushButton('Exporter tous les profils dans un dossier'); batch.clicked.connect(self.export_all); ll.insertWidget(ll.count()-2,batch)
         self.status=QLabel('Prêt. Les données sources ne sont jamais modifiées.'); self.status.setWordWrap(True); ll.addWidget(self.status); split.addWidget(left)
         self.chart=ProfileChart(); split.addWidget(self.chart); split.setSizes([320,850])
+    def reset_results(self):
+        """Vide les résultats calculés sans toucher aux couches sources QGIS."""
+        self.profiles.clear()
+        self.list.clear()
+        self.chart.set_profile(None)
+        self.status.setText('Prêt. Cliquez sur « Créer les profils » pour lancer une nouvelle analyse.')
+    def closeEvent(self,event):
+        self.reset_results()
+        super().closeEvent(event)
     def refresh_layers(self):
         current=self.layers.currentData(); self.layers.blockSignals(True); self.layers.clear()
         for lyr in QgsProject.instance().mapLayers().values():
