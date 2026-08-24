@@ -1,0 +1,15 @@
+[general]
+name=CoastProfile
+description=Suivi multiannuel des profils topographiques de plage et de dune, contrôle GNSS et bilans d'érosion.
+version=0.2.0
+qgisMinimumVersion=4.0
+author=Mamadou Ndiaye LO
+email=
+about=Crée, contrôle, compare et exporte des profils côtiers 3D issus de campagnes GNSS. Compatibilité QGIS 4 / Qt 6 renforcée.
+category=Vector
+icon=icon.svg
+tags=coast,dune,beach,GNSS,profile,erosion,monitoring
+experimental=True
+deprecated=False
+tracker=https://github.com/mamadoundiayelo60-hash/coastprofile-lab/issues
+repository=https://github.com/mamadoundiayelo60-hash/coastprofile-lab
