@@ -1,0 +1,10 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.zip
+data/
+*.gpkg
+*.shp
+*.dbf
+*.shx
+*.prj
