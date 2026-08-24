@@ -24,6 +24,12 @@ def decimal(value) -> float | None:
     try: return float(str(value).replace(",", "."))
     except (TypeError, ValueError): return None
 
+def profile_identifier(value) -> str | None:
+    """Normalise un identifiant sans appliquer de nomenclature métier."""
+    if value is None: return None
+    text=str(value).strip()
+    return text or None
+
 def main_spatial_group(points: Iterable[SurveyPoint], link_distance: float=75.0) -> tuple[list[SurveyPoint],list[SurveyPoint]]:
     """Conserve la plus grande composante spatiale et isole les points éloignés."""
     pts=list(points); unseen=set(range(len(pts))); components=[]

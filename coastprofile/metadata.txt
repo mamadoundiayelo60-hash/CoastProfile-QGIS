@@ -1,15 +1,17 @@
 [general]
 name=CoastProfile
 description=Suivi multiannuel des profils topographiques de plage et de dune, contrôle GNSS et bilans d'érosion.
-version=0.2.2
-qgisMinimumVersion=4.0
+version=0.3.0
+qgisMinimumVersion=3.28
+qgisMaximumVersion=4.99
 author=Mamadou Ndiaye LO
-email=
-about=Crée, contrôle, compare et exporte des profils côtiers 3D issus de campagnes GNSS. Compatibilité QGIS 4 / Qt 6 renforcée.
+email=235667811+mamadoundiayelo60-hash@users.noreply.github.com
+about=Crée, contrôle et exporte des profils côtiers issus de campagnes GNSS. Altitude issue de la géométrie Z ou d’un champ attributaire. Compatible QGIS 3 et QGIS 4.
 category=Vector
 icon=icon.svg
 tags=coast,dune,beach,GNSS,profile,erosion,monitoring
-experimental=True
+experimental=False
 deprecated=False
 tracker=https://github.com/mamadoundiayelo60-hash/CoastProfile-QGIS/issues
 repository=https://github.com/mamadoundiayelo60-hash/CoastProfile-QGIS
+homepage=https://github.com/mamadoundiayelo60-hash/CoastProfile-QGIS

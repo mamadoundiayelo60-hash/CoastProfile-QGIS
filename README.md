@@ -1,6 +1,6 @@
 # CoastProfile
 
-![QGIS](https://img.shields.io/badge/QGIS-4.0%2B-589632?logo=qgis&logoColor=white) ![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white) ![Qt](https://img.shields.io/badge/Qt-6-41CD52?logo=qt&logoColor=white) ![License](https://img.shields.io/badge/license-MIT-blue)
+![QGIS](https://img.shields.io/badge/QGIS-3.28%20à%204.x-589632?logo=qgis&logoColor=white) ![Python](https://img.shields.io/badge/Python-3-3776AB?logo=python&logoColor=white) ![Qt](https://img.shields.io/badge/Qt-5%20%7C%206-41CD52?logo=qt&logoColor=white) ![License](https://img.shields.io/badge/license-MIT-blue)
 
 **CoastProfile** est une extension QGIS destinée à créer, contrôler et suivre dans le temps des profils topographiques de plage et de dune issus de campagnes GNSS.
 
@@ -8,9 +8,12 @@
 
 Les campagnes topographiques produisent des points 3D qu'il faut regrouper, ordonner, contrôler et transformer en profils comparables. CoastProfile automatise ce parcours sans modifier les données sources.
 
-## Fonctionnalités — version 0.2.2
+## Fonctionnalités — version 0.3.0
 
 - sélection d'une couche ponctuelle 3D et choix des champs ;
+- altitude lue dans la géométrie Z ou dans un champ choisi ;
+- identifiants entièrement issus des données utilisateur, sans nomenclature imposée ;
+- seuil d’isolement spatial paramétrable ;
 - création automatique d'un profil par identifiant ;
 - orientation homogène terre vers mer et distance cumulée ;
 - détection des points spatialement isolés ;
@@ -18,7 +21,7 @@ Les campagnes topographiques produisent des points 3D qu'il faut regrouper, ordo
 - synchronisation profil–carte avec sélection et zoom QGIS ;
 - export PNG individuel ou par lot ;
 - réinitialisation automatique des résultats à la fermeture du plugin ;
-- compatibilité QGIS 4 et Qt 6.
+- compatibilité QGIS 3.28+ / QGIS 4 et Qt 5 / Qt 6.
 
 ## Démonstration validée
 
@@ -28,7 +31,7 @@ La campagne pilote comprend **181 points GNSS 3D**, répartis en **12 profils c�
 
 ## Installation
 
-1. Télécharger `coastprofile-0.2.2.zip` depuis les Releases GitHub.
+1. Télécharger `coastprofile-0.3.0.zip` depuis les Releases GitHub.
 2. Dans QGIS : **Extensions → Installer/Gérer les extensions → Installer depuis un ZIP**.
 3. Redémarrer QGIS puis ouvrir **CoastProfile**.
 4. Charger une couche de points 3D dans un CRS métrique correctement défini.

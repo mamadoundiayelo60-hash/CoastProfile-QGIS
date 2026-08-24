@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 — 2026-08-24
+
+- suppression complète des noms de profils codés en dur ;
+- compatibilité QGIS 3.28+ et QGIS 4, Qt 5 et Qt 6 ;
+- choix entre altitude de la géométrie Z et champ attributaire ;
+- seuil d’isolement spatial réglable ;
+- blocage du calcul dans un CRS géographique non métrique ;
+- tests exécutables avec la bibliothèque standard Python.
+
 ## 0.2.2 — 2026-08-24
 
 - réinitialisation de la liste, du graphique et des résultats à la fermeture ;
