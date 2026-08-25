@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.1 — 2026-08-25
+
+- correction scientifique des unités de comparaison ;
+- remplacement de `m²/ml` par **m² de section** dans l'interface ;
+- clarification : les aires entre deux courbes sont des surfaces de section verticale, pas des volumes ;
+- mise à jour cohérente du README, des métadonnées et du paquet d'installation.
+
 ## 0.4.0 — 2026-08-24
 
 - conservation intégrale de la génération et des exports de profils annuels ;
