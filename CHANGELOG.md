@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.2 — 2026-08-25
+
+- ajout du bouton **Comprendre les indicateurs** dans l'analyse multiannuelle ;
+- définitions intégrées de la longueur commune, de l'accrétion, de l'érosion et du bilan net ;
+- rappel des unités de section, du rôle du seuil GNSS et des limites scientifiques.
+
 ## 0.4.1 — 2026-08-25
 
 - correction scientifique des unités de comparaison ;
