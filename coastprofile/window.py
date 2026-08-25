@@ -126,6 +126,7 @@ class CoastProfileWindow(QMainWindow):
         self.compare_id.currentTextChanged.connect(self._comparison_campaigns); button=QPushButton('Comparer les campagnes'); button.clicked.connect(self.run_comparison); cl.addWidget(button)
         export=QPushButton('Exporter la comparaison en PNG'); export.clicked.connect(self.export_comparison); cl.addWidget(export)
         self.metrics=QLabel('Ajoutez plusieurs campagnes portant le même identifiant.'); self.metrics.setWordWrap(True); self.metrics.setStyleSheet('padding:12px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;'); cl.addWidget(self.metrics); cl.addStretch(1)
+        help_button=QPushButton('Comprendre les indicateurs'); help_button.clicked.connect(self.show_indicator_help); cl.addWidget(help_button)
         note=QLabel('Interprétation : vert = hausse, rouge = baisse, gris = variation comprise dans l’incertitude. Les résultats surfaciques correspondent à l’aire de la section verticale du profil, exprimée en m². Comparez uniquement des campagnes dans le même référentiel altimétrique.'); note.setWordWrap(True); cl.addWidget(note); split.addWidget(controls)
         self.comparison_chart=ComparisonChart(); split.addWidget(self.comparison_chart); split.setSizes([330,850]); self.tabs.addTab(tab,'Évolution multiannuelle')
     def reset_results(self):
@@ -238,3 +239,23 @@ class CoastProfileWindow(QMainWindow):
         if not self.comparison_chart.series: return
         ident=self.comparison_chart.series[0].identifier.replace('/','_').replace(' ','_'); path,_=QFileDialog.getSaveFileName(self,'Exporter la comparaison',f'{ident}_evolution_multiannuelle.png','PNG (*.png)')
         if path: self.comparison_chart.grab().save(path,'PNG'); self.metrics.setText(self.metrics.text()+f'<br><br>Graphique exporté : {path}')
+    def show_indicator_help(self):
+        """Présente les indicateurs multiannuels et leurs limites d'usage."""
+        text=(
+            '<h3>Lecture de la comparaison multiannuelle</h3>'
+            '<p><b>Longueur commune</b> : portion réellement couverte par les deux campagnes. '
+            'Aucun calcul n’est effectué au-delà de la campagne la plus courte.</p>'
+            '<p><b>Accrétion de section (m²)</b> : aire où la campagne comparée se situe au-dessus de la référence.</p>'
+            '<p><b>Érosion de section (m²)</b> : aire où la campagne comparée se situe sous la référence.</p>'
+            '<p><b>Bilan net de section (m²)</b> : accrétion moins érosion. Un résultat positif indique une hausse '
+            'globale ; un résultat négatif, une baisse globale.</p>'
+            '<p><b>Hausse maximale / baisse maximale (m)</b> : plus grands écarts altimétriques locaux. '
+            'Ils ne représentent pas une moyenne sur tout le profil.</p>'
+            '<p><b>Seuil de stabilité</b> : variation considérée comme non significative. Il doit être adapté à la '
+            'précision GNSS, au protocole de levé et au niveau de confiance recherché.</p>'
+            '<p><b>Couleurs</b> : vert = hausse ; rouge = baisse ; gris = variation comprise dans le seuil.</p>'
+            '<hr><p><b>Précaution scientifique :</b> comparez uniquement des campagnes utilisant le même CRS, '
+            'le même référentiel altimétrique, la même orientation et une méthode d’acquisition comparable. '
+            'Les surfaces affichées sont des aires de section verticale, pas des volumes totaux.</p>'
+        )
+        box=QMessageBox(self); box.setWindowTitle('CoastProfile — Comprendre les indicateurs'); box.setTextFormat(_enum(Qt,'TextFormat','RichText')); box.setText(text); box.setIcon(_enum(QMessageBox,'Icon','Information')); (box.exec if hasattr(box,'exec') else box.exec_)()
