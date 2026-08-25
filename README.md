@@ -8,7 +8,7 @@
 
 Les campagnes topographiques produisent des points 3D qu'il faut regrouper, ordonner, contrôler et transformer en profils comparables. CoastProfile automatise ce parcours sans modifier les données sources.
 
-## Fonctionnalités — version 0.4.0
+## Fonctionnalités — version 0.4.1
 
 - sélection d'une couche ponctuelle 3D et choix des champs ;
 - altitude lue dans la géométrie Z ou dans un champ choisi ;
@@ -39,7 +39,7 @@ La campagne pilote comprend **181 points GNSS 3D**, répartis en **12 profils c�
 
 ## Installation
 
-1. Télécharger `coastprofile-0.4.0.zip` depuis les Releases GitHub.
+1. Télécharger `coastprofile-0.4.1.zip` depuis les Releases GitHub.
 2. Dans QGIS : **Extensions → Installer/Gérer les extensions → Installer depuis un ZIP**.
 3. Redémarrer QGIS puis ouvrir **CoastProfile**.
 4. Charger une couche de points 3D dans un CRS métrique correctement défini.
@@ -67,13 +67,13 @@ Le moteur est séparé de l'interface afin de faciliter les tests et les évolut
 5. calcul de la distance cumulée dans le CRS métrique ;
 6. génération du profil et synchronisation avec la carte ;
 7. interpolation des campagnes sur leur longueur commune ;
-8. intégration des écarts altimétriques pour estimer l'érosion et l'accrétion par mètre linéaire.
+8. intégration des écarts altimétriques pour estimer les surfaces d'érosion et d'accrétion de la section verticale du profil, en m².
 
 ## Comparaison multiannuelle
 
 Créez d'abord les profils d'une campagne, puis sélectionnez une autre couche et relancez **Créer les profils**. CoastProfile conserve les campagnes déjà calculées dans la fenêtre. Dès qu'un identifiant possède au moins deux années, il apparaît dans l'onglet **Évolution multiannuelle**.
 
-Le rouge représente une baisse altimétrique, le vert une hausse et le gris une variation comprise dans le seuil d'incertitude. Les résultats doivent être interprétés uniquement si les campagnes utilisent le même système de coordonnées, le même référentiel altimétrique et une méthode d'acquisition comparable.
+Le rouge représente une baisse altimétrique, le vert une hausse et le gris une variation comprise dans le seuil d'incertitude. Les aires calculées entre deux courbes sont des surfaces de section en m², et non des volumes. Les résultats doivent être interprétés uniquement si les campagnes utilisent le même système de coordonnées, le même référentiel altimétrique et une méthode d'acquisition comparable.
 
 ## Roadmap
 
