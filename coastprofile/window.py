@@ -126,7 +126,7 @@ class CoastProfileWindow(QMainWindow):
         self.compare_id.currentTextChanged.connect(self._comparison_campaigns); button=QPushButton('Comparer les campagnes'); button.clicked.connect(self.run_comparison); cl.addWidget(button)
         export=QPushButton('Exporter la comparaison en PNG'); export.clicked.connect(self.export_comparison); cl.addWidget(export)
         self.metrics=QLabel('Ajoutez plusieurs campagnes portant le même identifiant.'); self.metrics.setWordWrap(True); self.metrics.setStyleSheet('padding:12px;background:#f8fafc;border:1px solid #cbd5e1;border-radius:6px;'); cl.addWidget(self.metrics); cl.addStretch(1)
-        note=QLabel('Interprétation : vert = hausse, rouge = baisse, gris = variation comprise dans l’incertitude. Les surfaces sont exprimées en m² par mètre linéaire de côte. Comparez uniquement des campagnes dans le même référentiel altimétrique.'); note.setWordWrap(True); cl.addWidget(note); split.addWidget(controls)
+        note=QLabel('Interprétation : vert = hausse, rouge = baisse, gris = variation comprise dans l’incertitude. Les résultats surfaciques correspondent à l’aire de la section verticale du profil, exprimée en m². Comparez uniquement des campagnes dans le même référentiel altimétrique.'); note.setWordWrap(True); cl.addWidget(note); split.addWidget(controls)
         self.comparison_chart=ComparisonChart(); split.addWidget(self.comparison_chart); split.setSizes([330,850]); self.tabs.addTab(tab,'Évolution multiannuelle')
     def reset_results(self):
         """Vide les résultats calculés sans toucher aux couches sources QGIS."""
@@ -233,7 +233,7 @@ class CoastProfileWindow(QMainWindow):
         ordered=[archive[c] for c in sorted(archive,key=natural_sort_key)]; self.comparison_chart.set_profiles(ordered,first,second,threshold)
         stable_area=threshold*result.chainage[-1]
         trend='hausse nette' if result.net_area>stable_area else 'baisse nette' if result.net_area<-stable_area else 'stabilité globale'
-        self.metrics.setText(f'<b>{ref} → {target} : {trend}</b><br>Longueur commune : {result.chainage[-1]:.1f} m<br>Accrétion : {result.accretion_area:.1f} m²/ml<br>Érosion : {result.erosion_area:.1f} m²/ml<br>Bilan net : {result.net_area:+.1f} m²/ml<br>Hausse maximale : {result.max_accretion:+.2f} m<br>Baisse maximale : {result.max_erosion:+.2f} m')
+        self.metrics.setText(f'<b>{ref} → {target} : {trend}</b><br>Longueur commune : {result.chainage[-1]:.1f} m<br>Accrétion de section : {result.accretion_area:.1f} m²<br>Érosion de section : {result.erosion_area:.1f} m²<br>Bilan net de section : {result.net_area:+.1f} m²<br>Hausse maximale : {result.max_accretion:+.2f} m<br>Baisse maximale : {result.max_erosion:+.2f} m')
     def export_comparison(self):
         if not self.comparison_chart.series: return
         ident=self.comparison_chart.series[0].identifier.replace('/','_').replace(' ','_'); path,_=QFileDialog.getSaveFileName(self,'Exporter la comparaison',f'{ident}_evolution_multiannuelle.png','PNG (*.png)')
