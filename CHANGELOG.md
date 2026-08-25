@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.4.3 — 2026-08-25
+
+- paquet rendu conforme au validateur du dépôt officiel QGIS ;
+- ajout de `LICENSE` dans le dossier racine de l'extension ;
+- ajout du `README.md` dans l'archive distribuée ;
+- aucune modification des calculs ou de l'interface validée en 0.4.2.
+
 ## 0.4.2 — 2026-08-25
 
 - ajout du bouton **Comprendre les indicateurs** dans l'analyse multiannuelle ;
