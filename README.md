@@ -40,7 +40,7 @@ La campagne pilote comprend **181 points GNSS 3D**, répartis en **12 profils c�
 
 ## Installation
 
-1. Télécharger `coastprofile-0.4.3.zip` depuis les Releases GitHub.
+1. Télécharger `coastprofile-0.4.4.zip` depuis les Releases GitHub.
 2. Dans QGIS : **Extensions → Installer/Gérer les extensions → Installer depuis un ZIP**.
 3. Redémarrer QGIS puis ouvrir **CoastProfile**.
 4. Charger une couche de points 3D dans un CRS métrique correctement défini.
