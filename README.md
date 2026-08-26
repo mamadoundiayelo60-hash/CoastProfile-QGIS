@@ -8,7 +8,7 @@
 
 Les campagnes topographiques produisent des points 3D qu'il faut regrouper, ordonner, contrôler et transformer en profils comparables. CoastProfile automatise ce parcours sans modifier les données sources.
 
-## Fonctionnalités — version 0.4.3
+## Fonctionnalités — version 0.4.4
 
 - sélection d'une couche ponctuelle 3D et choix des champs ;
 - altitude lue dans la géométrie Z ou dans un champ choisi ;
@@ -85,7 +85,7 @@ Le rouge représente une baisse altimétrique, le vert une hausse et le gris une
 
 ## Auteur
 
-**Mamadou Ndiaye LO** — Géomaticien / Administrateur SIG  
+**Mamadou Ndiaye LO** — Géomaticien – Administrateur SIG & Développeur SIG Web | Data spatiale, bases de données & automatisation 
 Python · QGIS · PostgreSQL/PostGIS · ETL géospatial · GNSS/LiDAR
 
 Licence MIT.
