@@ -8,7 +8,7 @@
 
 Les campagnes topographiques produisent des points 3D qu'il faut regrouper, ordonner, contrôler et transformer en profils comparables. CoastProfile automatise ce parcours sans modifier les données sources.
 
-## Fonctionnalités — version 0.4.4
+## Fonctionnalités — version 0.4.3
 
 - sélection d'une couche ponctuelle 3D et choix des champs ;
 - altitude lue dans la géométrie Z ou dans un champ choisi ;
