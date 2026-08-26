@@ -1,11 +1,11 @@
 [general]
 name=CoastProfile
 description=Suivi multiannuel des profils topographiques de plage et de dune, contrôle GNSS et bilans d'érosion.
-version=0.4.4
+version=0.4.3
 qgisMinimumVersion=3.28
 qgisMaximumVersion=4.99
 author=Mamadou Ndiaye LO
-email=235667811+mamadoundiayelo60@gmail.com
+email=mamadoundiayelo60@gmail.com
 about=Crée et exporte les profils côtiers issus de campagnes GNSS, puis compare plusieurs années par identifiant avec superposition, zones d'érosion/accrétion et bilan morphologique. Compatible QGIS 3 et QGIS 4.
 category=Vector
 icon=icon.svg
