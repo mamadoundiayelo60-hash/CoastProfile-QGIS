@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.4.3 — 2026-08-25
+## 0.4.3 — 2026-08-26
 
 - paquet rendu conforme au validateur du dépôt officiel QGIS ;
 - ajout de `LICENSE` dans le dossier racine de l'extension ;
