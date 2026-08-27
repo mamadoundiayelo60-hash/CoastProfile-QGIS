@@ -8,7 +8,7 @@
 
 Les campagnes topographiques produisent des points 3D qu'il faut regrouper, ordonner, contrôler et transformer en profils comparables. CoastProfile automatise ce parcours sans modifier les données sources.
 
-## Fonctionnalités — version 0.4.3
+## Fonctionnalités — version 0.4.4
 
 - sélection d'une couche ponctuelle 3D et choix des champs ;
 - altitude lue dans la géométrie Z ou dans un champ choisi ;
@@ -40,7 +40,7 @@ La campagne pilote comprend **181 points GNSS 3D**, répartis en **12 profils c�
 
 ## Installation
 
-1. Télécharger `coastprofile-0.4.3.zip` depuis les Releases GitHub.
+1. Télécharger `coastprofile-0.4.4.zip` depuis les Releases GitHub.
 2. Dans QGIS : **Extensions → Installer/Gérer les extensions → Installer depuis un ZIP**.
 3. Redémarrer QGIS puis ouvrir **CoastProfile**.
 4. Charger une couche de points 3D dans un CRS métrique correctement défini.
